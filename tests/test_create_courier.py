@@ -1,20 +1,18 @@
 import pytest
 import allure
-from src.courier_api import ScooterApi
+from src.courier_api import scooterapi
 from src.data import CourierData
 
 
 @pytest.fixture
 def delete_courier_after_test():
     """Фикстура для автоматического удаления курьера после теста (Teardown)"""
-    # Словарь, куда тест запишет id созданного курьера
     courier_info = {"id": None}
     
     yield courier_info
     
-    # После завершения теста удаляем курьера, если id был получен
     if courier_info["id"]:
-        ScooterApi.delete_courier(courier_info["id"])
+        scooterapi.delete_courier(courier_info["id"])
 
 
 @allure.epic("Управление курьерами")
@@ -25,13 +23,12 @@ class TestCreateCourier:
     @allure.description("Проверка, что нового курьера можно успешно создать с валидными данными")
     def test_success_create_courier(self, delete_courier_after_test):
         payload = CourierData.generate_new_courier_payload()
-        response = ScooterApi.create_courier(payload)
+        response = scooterapi.create_courier(payload)
         
         assert response.status_code == 201
         assert response.json() == {"ok": True}
         
-        # Логинимся, чтобы получить id для фикстуры удаления
-        login_res = ScooterApi.login_courier({"login": payload["login"], "password": payload["password"]})
+        login_res = scooterapi.login_courier({"login": payload["login"], "password": payload["password"]})
         if login_res.status_code == 200:
             delete_courier_after_test["id"] = login_res.json().get("id")
 
@@ -40,17 +37,14 @@ class TestCreateCourier:
     def test_cannot_create_duplicate_courier(self, delete_courier_after_test):
         payload = CourierData.generate_new_courier_payload()
         
-        # Создаем первого курьера
-        res1 = ScooterApi.create_courier(payload)
+        res1 = scooterapi.create_courier(payload)
         assert res1.status_code == 201
         
-        # Сразу получаем его id для гарантированного удаления через фикстуру
-        login_res = ScooterApi.login_courier({"login": payload["login"], "password": payload["password"]})
+        login_res = scooterapi.login_courier({"login": payload["login"], "password": payload["password"]})
         if login_res.status_code == 200:
             delete_courier_after_test["id"] = login_res.json().get("id")
             
-        # Пытаемся создать дубликат — этот шаг теперь изолирован
-        res2 = ScooterApi.create_courier(payload)
+        res2 = scooterapi.create_courier(payload)
         assert res2.status_code == 409
         assert "Этот логин уже используется" in res2.json().get("message", "")
 
@@ -61,7 +55,7 @@ class TestCreateCourier:
         payload = CourierData.generate_new_courier_payload()
         del payload[missing_field]
         
-        response = ScooterApi.create_courier(payload)
+        response = scooterapi.create_courier(payload)
         
         assert response.status_code == 400
         assert response.json().get("message") == "Недостаточно данных для создания учетной записи"
