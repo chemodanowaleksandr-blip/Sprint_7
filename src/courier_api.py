@@ -1,6 +1,6 @@
 import requests
 import allure
-from src.data import Urls
+
 
 
 class scooterapi:
@@ -29,3 +29,9 @@ class scooterapi:
     @allure.step("Получение списка заказов (GET)")
     def get_orders_list():
         return requests.get(Urls.ORDERS)
+class urls:
+    CREATE_COURIER = "https://praktikum-services.ru"
+    LOGIN_COURIER = "https://praktikum-services.ru/login"
+    ORDERS = "https://praktikum-services.ru"
+
+
