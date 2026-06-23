@@ -3,7 +3,6 @@ import allure
 
 
 class scooterapi:
-    # Объявляем урлы прямо внутри класса – теперь они гарантированно доступны везде!
     CREATE_COURIER = "https://praktikum-services.ru"
     LOGIN_COURIER = "https://praktikum-services.ru/login"
     ORDERS = "https://praktikum-services.ru"
