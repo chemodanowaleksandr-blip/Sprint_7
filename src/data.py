@@ -8,13 +8,13 @@ class Urls:
     ORDERS = f"{BASE_URL}/api/v1/orders"
 
 class CourierData:
-    @staticmethod
-    def generate_random_string(length=10):
+    @classmethod
+    def generate_random_string(cls, length=10):
         letters = string.ascii_lowercase
         return ''.join(random.choice(letters) for _ in range(length))
 
     @classmethod
-    def generate_new_courier_payload(cls):
+    def generate_new_couple_payload(cls):
         return {
             "login": cls.generate_random_string(),
             "password": cls.generate_random_string(),
