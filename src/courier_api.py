@@ -1,35 +1,30 @@
 import requests
 import allure
+from src.data import Urls
 
-
-class scooterapi:
-    # Прописываем рабочий стенд Практикума напрямую через IP, минуя сломанный DNS!
-    CREATE_COURIER = "https://130.193.53"
-    LOGIN_COURIER = "https://130.193.53/login"
-    ORDERS = "https://130.193.53"
-
+class ScooterApi:
     @staticmethod
-    @allure.step("Создание курьера (POST)")
+    @allure.step("Создание курьера (POST /api/v1/courier)")
     def create_courier(payload):
-        # Отключаем строгую проверку SSL-сертификата (verify=False), так как идем по IP
-        return requests.post(scooterapi.CREATE_COURIER, json=payload, verify=False)
+        return requests.post(Urls.CREATE_COURIER, json=payload)
 
     @staticmethod
-    @allure.step("Логин курьера в системе (POST)")
+    @allure.step("Логин курьера в системе (POST /api/v1/courier/login)")
     def login_courier(payload):
-        return requests.post(scooterapi.LOGIN_COURIER, json=payload, verify=False)
+        # Добавляем timeout=5, чтобы предотвратить бесконечное зависание сервера Практикума
+        return requests.post(Urls.LOGIN_COURIER, json=payload, timeout=5)
 
     @staticmethod
-    @allure.step("Удаление курьера по ID (DELETE)")
+    @allure.step("Удаление курьера по ID (DELETE /api/v1/courier/:id)")
     def delete_courier(courier_id):
-        return requests.delete(f"{scooterapi.CREATE_COURIER}/{courier_id}", verify=False)
+        return requests.delete(f"{Urls.CREATE_COURIER}/{courier_id}")
 
     @staticmethod
-    @allure.step("Создание заказа (POST)")
+    @allure.step("Создание заказа (POST /api/v1/orders)")
     def create_order(payload):
-        return requests.post(scooterapi.ORDERS, json=payload, verify=False)
+        return requests.post(Urls.ORDERS, json=payload)
 
     @staticmethod
-    @allure.step("Получение списка заказов (GET)")
+    @allure.step("Получение списка заказов (GET /api/v1/orders)")
     def get_orders_list():
-        return requests.get(scooterapi.ORDERS, verify=False)
+        return requests.get(Urls.ORDERS)
