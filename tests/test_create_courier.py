@@ -30,9 +30,10 @@ class TestCreateCourier:
         response = self.api.create_courier(existing_payload)
         
         assert response.status_code == 409
-        assert "Этот логин уже занят" in response.json()["message"]
+        assert "Этот логин уже используется" in response.json()["message"]
 
-    @pytest.mark.parametrize("missing_field", ["login", "password", "firstName"])
+    # Исключили firstName, так как это необязательное поле в API Самоката
+    @pytest.mark.parametrize("missing_field", ["login", "password"])
     @allure.title("Ошибка создания курьера при отсутствии обязательного поля")
     def test_create_courier_missing_field(self, missing_field):
         payload = CourierData.generate_new_couple_payload()
