@@ -1,11 +1,15 @@
 import pytest
 import allure
-from src.courier_api import ScooterApi
+import src.courier_api
 from src.data import OrderData
 
 @allure.epic("Управление заказами")
 @allure.feature("Создание и получение заказов")
 class TestOrders:
+
+    @property
+    def api(self):
+        return getattr(src.courier_api, "ScooterApi", getattr(src.courier_api, "scooterapi", None))
 
     @pytest.mark.parametrize("colors", [
         ["BLACK"],
@@ -18,14 +22,14 @@ class TestOrders:
         payload = OrderData.BASE_ORDER_PAYLOAD.copy()
         payload["color"] = colors
         
-        response = ScooterApi.create_order(payload)
+        response = self.api.create_order(payload)
         
         assert response.status_code == 201
         assert "track" in response.json()
 
     @allure.title("Получение списка заказов")
     def test_get_orders_list(self):
-        response = ScooterApi.get_orders_list()
+        response = self.api.get_orders_list()
         
         assert response.status_code == 200
         assert "orders" in response.json()
