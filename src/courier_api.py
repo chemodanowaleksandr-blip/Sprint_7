@@ -11,7 +11,6 @@ class ScooterApi:
     @staticmethod
     @allure.step("Логин курьера в системе (POST /api/v1/courier/login)")
     def login_courier(payload):
-        # Добавляем timeout=5, чтобы предотвратить бесконечное зависание сервера Практикума
         return requests.post(Urls.LOGIN_COURIER, json=payload, timeout=5)
 
     @staticmethod
