@@ -1,6 +1,6 @@
 import pytest
 import allure
-from src.courier_api import scooterapi
+from src.courier_api import ScooterApi
 from src.data import CourierData
 
 @allure.epic("Управление курьерами")
@@ -11,7 +11,7 @@ class TestLoginCourier:
     def test_success_login(self, create_and_delete_courier):
         payload, _, courier_id = create_and_delete_courier
         
-        response = scooterapi.login_courier({"login": payload["login"], "password": payload["password"]})
+        response = ScooterApi.login_courier({"login": payload["login"], "password": payload["password"]})
         
         assert response.status_code == 200
         assert "id" in response.json()
@@ -20,7 +20,7 @@ class TestLoginCourier:
     def test_login_with_wrong_credentials(self, create_and_delete_courier):
         payload, _, _ = create_and_delete_courier
         
-        response = scooterapi.login_courier({"login": payload["login"], "password": "wrong_password"})
+        response = ScooterApi.login_courier({"login": payload["login"], "password": "wrong_password"})
         
         assert response.status_code == 404
         assert "Учетная запись не найдена" in response.json()["message"]
@@ -32,7 +32,7 @@ class TestLoginCourier:
         del payload[missing_field]
         
         try:
-            response = scooterapi.login_courier(payload)
+            response = ScooterApi.login_courier(payload)
             assert response.status_code == 400
             assert "Недостаточно данных для входа" in response.json()["message"]
         except Exception:
