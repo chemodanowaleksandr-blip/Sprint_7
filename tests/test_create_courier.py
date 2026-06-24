@@ -1,29 +1,33 @@
 import pytest
 import allure
-from src.courier_api import ScooterApi
+import src.courier_api
 from src.data import CourierData
 
 @allure.epic("Управление курьерами")
 @allure.feature("Создание курьера")
 class TestCreateCourier:
 
+    @property
+    def api(self):
+        return getattr(src.courier_api, "ScooterApi", getattr(src.courier_api, "scooterapi", None))
+
     @allure.title("Успешное создание курьера")
     def test_success_create_courier(self):
         payload = CourierData.generate_new_couple_payload()
-        response = ScooterApi.create_courier(payload)
+        response = self.api.create_courier(payload)
         
         assert response.status_code == 201
         assert response.json() == {"ok": True}
         
-        login_res = ScooterApi.login_courier({"login": payload["login"], "password": payload["password"]})
+        login_res = self.api.login_courier({"login": payload["login"], "password": payload["password"]})
         if login_res.status_code == 200:
-            ScooterApi.delete_courier(login_res.json()["id"])
+            self.api.delete_courier(login_res.json()["id"])
 
     @allure.title("Нельзя создать двух одинаковых курьеров")
     def test_cannot_create_duplicate_courier(self, create_and_delete_courier):
         existing_payload, _, _ = create_and_delete_courier
         
-        response = ScooterApi.create_courier(existing_payload)
+        response = self.api.create_courier(existing_payload)
         
         assert response.status_code == 409
         assert "Этот логин уже занят" in response.json()["message"]
@@ -34,7 +38,7 @@ class TestCreateCourier:
         payload = CourierData.generate_new_couple_payload()
         del payload[missing_field]
         
-        response = ScooterApi.create_courier(payload)
+        response = self.api.create_courier(payload)
         
         assert response.status_code == 400
         assert "Недостаточно данных для создания учетной записи" in response.json()["message"]
